@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مولد الألوان الاحترافي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: white;
+            --header-text: white;
+            --code-bg: #f8f9fa;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #1a252f;
+            --secondary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --card-bg: #2d2d2d;
+            --header-text: #ecf0f1;
+            --code-bg: #383838;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--primary-color);
+            border-radius: 15px;
+            color: var(--header-text);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #ecf0f1;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .primary-btn {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .secondary-btn {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .color-box {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .color-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .color-preview {
+            height: 200px;
+            position: relative;
+        }
+
+        .color-info {
+            padding: 15px;
+            background: var(--card-bg);
+        }
+
+        .color-codes {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .code-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: var(--code-bg);
+            color: var(--text-color);
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--accent-color);
+            padding: 5px;
+            transition: transform 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .tools {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 5px;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tool-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .saved-palettes {
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .saved-palettes h2 {
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .mini-palette {
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .delete-palette {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2;
+            font-size: 1.2em;
+        }
+
+        .mini-palette::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .mini-palette:hover::before {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .mini-palette:hover .delete-palette {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .delete-palette:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .color-strip {
+            height: 20%;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .color-palette {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .color-box {
+                margin-bottom: 10px;
+            }
+
+            .color-preview {
+                height: 150px;
+            }
+
+            .palette-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .notification {
+                width: 90%;
+                right: 5%;
+                text-align: center;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            animation: modalShow 0.3s ease;
+        }
+
+        @keyframes modalShow {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>مولد الألوان الاحترافي</h1>
+            <p class="subtitle">أنشئ وحفظ لوحات ألوان مميزة</p>
+        </header>
+
+        <div class="controls">
+            <button class="btn primary-btn" onclick="generateColors()">
+                <i class="fas fa-sync-alt"></i>
+                توليد ألوان جديدة
+            </button>
+            <button class="btn secondary-btn" onclick="savePalette()">
+                <i class="fas fa-save"></i>
+                حفظ اللوحة
+            </button>
+            <button class="btn secondary-btn" onclick="toggleColorMode()">
+                <i class="fas fa-palette"></i>
+                <span id="colorModeText">RGB</span>
+            </button>
+            <button class="btn secondary-btn" onclick="toggleTheme()">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span id="themeText">الوضع الداكن</span>
+            </button>
+        </div>
+
+        <div class="color-palette" id="colorPalette">
+            <!-- سيتم إضافة صناديق الألوان هنا -->
+        </div>
+
+        <div class="saved-palettes">
+            <h2>اللوحات المحفوظة</h2>
+            <div class="palette-grid" id="savedPalettesGrid">
+                <!-- سيتم إضافة اللوحات المحفوظة هنا -->
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h3>تأكيد الحذف</h3>
+            <p>هل أنت متأكد من حذف هذه اللوحة؟</p>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm-btn" id="confirmDelete">حذف</button>
+                <button class="modal-btn cancel-btn" onclick="closeDeleteModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'hex';
+        let currentPalette = [];
+        let currentTheme = 'light';
+        let deleteIndex = null;
+        const deleteModal = document.getElementById('deleteModal');
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function generateRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function adjustColor(hex, amount) {
+            let rgb = hexToRgb(hex);
+            rgb.r = Math.max(0, Math.min(255, rgb.r + amount));
+            rgb.g = Math.max(0, Math.min(255, rgb.g + amount));
+            rgb.b = Math.max(0, Math.min(255, rgb.b + amount));
+            
+            return '#' + 
+                rgb.r.toString(16).padStart(2, '0') +
+                rgb.g.toString(16).padStart(2, '0') +
+                rgb.b.toString(16).padStart(2, '0');
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('تم نسخ الكود!');
+            });
+        }
+
+        function toggleColorMode() {
+            currentMode = currentMode === 'hex' ? 'rgb' : 'hex';
+            document.getElementById('colorModeText').textContent = currentMode.toUpperCase();
+            generateColors(currentPalette);
+        }
+
+        function getColorString(hex) {
+            if (currentMode === 'hex') {
+                return hex.toUpperCase();
+            } else {
+                const rgb = hexToRgb(hex);
+                return `RGB(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+            }
+        }
+
+        function createColorBox(color) {
+            const rgb = hexToRgb(color);
+            const box = document.createElement('div');
+            box.className = 'color-box';
+            
+            box.innerHTML = `
+                <div class="color-preview" style="background-color: ${color}">
+                    <div class="tools">
+                        <button class="tool-btn" onclick="adjustBrightness('${color}', 20)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="tool-btn" onclick="adjustBrightness('${color}', -20)">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="color-info">
+                    <div class="color-codes">
+                        <div class="code-item">
+                            <span>${getColorString(color)}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${getColorString(color)}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return box;
+        }
+
+        function adjustBrightness(color, amount) {
+            const newColor = adjustColor(color, amount);
+            const index = currentPalette.indexOf(color);
+            if (index !== -1) {
+                currentPalette[index] = newColor;
+                generateColors(currentPalette);
+            }
+        }
+
+        function generateColors(palette = null) {
+            const paletteContainer = document.getElementById('colorPalette');
+            paletteContainer.innerHTML = '';
+            
+            if (!palette) {
+                currentPalette = Array(5).fill().map(() => generateRandomColor());
+            } else {
+                currentPalette = palette;
+            }
+            
+            currentPalette.forEach(color => {
+                const colorBox = createColorBox(color);
+                paletteContainer.appendChild(colorBox);
+            });
+        }
+
+        function savePalette() {
+            const savedPalettes = JSON.parse(localStorage.getItem('colorPalettes') || '[]');
+            savedPalettes.push(currentPalette);
+            localStorage.setItem('colorPalettes', JSON.stringify(savedPalettes));
+            showNotification('تم حفظ اللوحة!');
+            displaySavedPalettes();
+        }
+
+        function displaySavedPalettes() {
+            const savedPalettes = JSON.parse(localStorage.getItem('colorPalettes') || '[]');
+            const container = document.getElementById('savedPalettesGrid');
+            container.innerHTML = '';
+            
+            savedPalettes.forEach((palette, index) => {
+                const miniPalette = document.createElement('div');
+                miniPalette.className = 'mini-palette';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-palette';
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteBtn.onclick = (e) => showDeleteModal(index, e);
+                miniPalette.appendChild(deleteBtn);
+                
+                miniPalette.onclick = () => generateColors(palette);
+                
+                palette.forEach(color => {
+                    const strip = document.createElement('div');
+                    strip.className = 'color-strip';
+                    strip.style.backgroundColor = color;
+                    miniPalette.appendChild(strip);
+                });
+                
+                container.appendChild(miniPalette);
+            });
+        }
+
+        function showDeleteModal(index, event) {
+            event.stopPropagation();
+            deleteIndex = index;
+            deleteModal.style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            deleteModal.style.display = 'none';
+            deleteIndex = null;
+        }
+
+        document.getElementById('confirmDelete').onclick = function() {
+            if (deleteIndex !== null) {
+                const savedPalettes = JSON.parse(localStorage.getItem('colorPalettes') || '[]');
+                savedPalettes.splice(deleteIndex, 1);
+                localStorage.setItem('colorPalettes', JSON.stringify(savedPalettes));
+                showNotification('تم حذف اللوحة!');
+                closeDeleteModal();
+                displaySavedPalettes();
+            }
+        };
+
+        window.onclick = function(event) {
+            if (event.target === deleteModal) {
+                closeDeleteModal();
+            }
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', currentTheme);
+            
+            if (currentTheme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'الوضع الفاتح';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'الوضع الداكن';
+            }
+            
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                currentTheme = savedTheme;
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                const themeIcon = document.getElementById('themeIcon');
+                const themeText = document.getElementById('themeText');
+                
+                if (currentTheme === 'dark') {
+                    themeIcon.className = 'fas fa-sun';
+                    themeText.textContent = 'الوضع الفاتح';
+                }
+            }
+        }
+
+        generateColors();
+        displaySavedPalettes();
+        loadTheme();
+    </script>
+</body>
+</html>
